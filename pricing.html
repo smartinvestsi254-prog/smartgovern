@@ -4,27 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SmartGovern Pricing</title>
-    <style>
-      :root { --bg:#07111f; --panel:#101c2f; --text:#f8fafc; --muted:#93a3b8; --accent:#5eead4; --gold:#d4af37; }
-      body { margin:0; font-family:Inter,Segoe UI,sans-serif; background:linear-gradient(135deg,#07111f,#14233f); color:var(--text); }
-      .layout { display:grid; grid-template-columns:280px 1fr; min-height:100vh; }
-      .sidebar { background:#0b1525; padding:24px; border-right:1px solid rgba(255,255,255,.08); }
-      .nav a { display:block; color:#cbd5e1; text-decoration:none; padding:10px 12px; border-radius:10px; margin:6px 0; }
-      .nav a.active, .nav a:hover { background:rgba(94,234,212,.12); color:white; }
-      .main { padding:28px; }
-      .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-      .card { background:rgba(16,28,47,.95); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:18px; }
-      .price { font-size:2rem; font-weight:700; color:var(--accent); }
-      .muted { color:var(--muted); }
-      .btn { display:inline-block; margin-top:12px; padding:10px 14px; border-radius:999px; background:var(--accent); color:#07111f; text-decoration:none; font-weight:700; }
-      @media (max-width: 900px) { .layout { grid-template-columns:1fr; } .sidebar { border-right:none; border-bottom:1px solid rgba(255,255,255,.08); } .cards { grid-template-columns:1fr; } }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="layout">
       <aside class="sidebar">
-        <h2>SmartGovern</h2>
-        <p>SaaS pricing</p>
+        <div class="brand">
+          <span class="brand-mark"></span>
+          <div>
+            <strong>SmartGovern</strong><br />
+            <span class="muted">Pricing</span>
+          </div>
+        </div>
         <div class="nav">
           <a href="dashboard.html">Overview</a>
           <a href="compliance.html">Compliance</a>
@@ -34,24 +25,24 @@
         </div>
       </aside>
       <main class="main">
-        <div class="cards">
+        <div class="grid">
           <div class="card">
             <h3>Starter</h3>
-            <div class="price">$49</div>
+            <div class="stat">$49</div>
             <p class="muted">For lean teams needing compliance controls and reporting.</p>
-            <a class="btn" href="#">Start free</a>
+            <a class="btn btn-primary" href="#">Start free</a>
           </div>
           <div class="card">
             <h3>Growth</h3>
-            <div class="price">$149</div>
+            <div class="stat">$149</div>
             <p class="muted">For scaling fintech operators with real-time risk monitoring.</p>
-            <a class="btn" href="#">Book demo</a>
+            <a class="btn btn-secondary" href="#">Book demo</a>
           </div>
           <div class="card">
             <h3>Enterprise</h3>
-            <div class="price">Custom</div>
+            <div class="stat">Custom</div>
             <p class="muted">For large organizations requiring deep integrations and governance controls.</p>
-            <a class="btn" href="#">Contact sales</a>
+            <a class="btn btn-secondary" href="#">Contact sales</a>
           </div>
         </div>
       </main>

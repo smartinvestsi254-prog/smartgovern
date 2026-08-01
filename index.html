@@ -4,46 +4,30 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SmartGovern | Fintech Governance SaaS</title>
-    <style>
-      :root { color-scheme: dark; --bg:#07111f; --panel:#101c2f; --text:#f4f7fb; --muted:#93a3b8; --accent:#5eead4; --gold:#d4af37; }
-      * { box-sizing: border-box; }
-      body { margin:0; font-family: Inter, Segoe UI, Arial, sans-serif; background:linear-gradient(135deg,#07111f,#14233f 60%,#0f172a); color:var(--text); }
-      .hero { min-height:100vh; display:grid; place-items:center; padding:2rem; }
-      .card { width:min(1180px,100%); background:rgba(16,28,47,.92); border:1px solid rgba(255,255,255,.08); border-radius:24px; padding:2rem; box-shadow:0 20px 60px rgba(0,0,0,.25); }
-      h1 { font-size:clamp(2rem,3.8vw,3.4rem); margin:0 0 1rem; }
-      p { color:var(--muted); line-height:1.7; font-size:1.05rem; }
-      .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-top:1.5rem; }
-      .feature { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); padding:1rem; border-radius:16px; }
-      .pill { display:inline-block; padding:.4rem .7rem; border-radius:999px; background:rgba(94,234,212,.16); color:var(--accent); font-size:.85rem; margin-bottom:.8rem; }
-      .actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:1.2rem; }
-      .btn { display:inline-block; padding:10px 14px; border-radius:999px; text-decoration:none; font-weight:700; }
-      .btn-primary { background:var(--accent); color:#07111f; }
-      .btn-secondary { border:1px solid rgba(255,255,255,.12); color:var(--text); }
-      @media (max-width: 800px) { .grid { grid-template-columns:1fr; } }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="hero">
-      <section class="card">
-        <span class="pill">Modern Fintech SaaS</span>
-        <h1>SmartGovern powers compliance, risk, and operating control for modern finance teams.</h1>
-        <p>Designed as a premium governance layer for investment, banking, and digital asset operations, this starter now includes a complete product experience spanning dashboard, compliance, risk, reporting, and pricing.</p>
-        <div class="actions">
+    <main class="hero" style="min-height:100vh; display:grid; place-items:center; padding:2rem;">
+      <section class="card" style="width:min(1180px,100%); padding:2rem;">
+        <span class="pill">Rouge & Black Fintech OS</span>
+        <h1 style="font-size:clamp(2rem,3.8vw,3.4rem); margin:0 0 1rem;">SmartGovern powers compliance, risk, and operating control for modern finance teams.</h1>
+        <p class="muted" style="line-height:1.7; font-size:1.05rem;">A distinct governance layer for investment, banking, and digital asset operations, designed to stay visually separate from SmartInvest while keeping the gold-accented fintech DNA.</p>
+        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:1.2rem;">
           <a class="btn btn-primary" href="dashboard.html">Open dashboard</a>
           <a class="btn btn-secondary" href="pricing.html">View pricing</a>
         </div>
-        <div class="grid">
-          <div class="feature">
+        <div class="grid" style="margin-top:1.5rem;">
+          <div class="card" style="margin:0;">
             <h3>Compliance</h3>
-            <p>Control frameworks, KYC workflows, and audit-ready governance actions.</p>
+            <p class="muted">Control frameworks, KYC workflows, and audit-ready governance actions.</p>
           </div>
-          <div class="feature">
+          <div class="card" style="margin:0;">
             <h3>Risk</h3>
-            <p>Monitoring dashboards, anomaly detection, and policy-based alerting.</p>
+            <p class="muted">Monitoring dashboards, anomaly detection, and policy-based alerting.</p>
           </div>
-          <div class="feature">
+          <div class="card" style="margin:0;">
             <h3>Growth</h3>
-            <p>Scalable SaaS architecture for enterprise clients, operators, and partners.</p>
+            <p class="muted">Scalable SaaS architecture for enterprise clients, operators, and partners.</p>
           </div>
         </div>
       </section>
