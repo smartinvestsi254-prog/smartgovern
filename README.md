@@ -1,14 +1,14 @@
 # SmartGovern
 
-SmartGovern is a modern fintech SaaS starter for governance, compliance, risk oversight, and operational intelligence. It is designed to sit alongside investment and trading products as a premium control layer for finance teams, operators, and regulated businesses.
+SmartGovern is a modern fintech SaaS experience for governance, compliance, risk oversight, and operational intelligence. It is designed to sit alongside investment and trading products as a premium control layer for finance teams, operators, and regulated businesses.
 
-## What is included
-- A polished SaaS-style landing experience for modern fintech positioning
-- A clear project structure for future product modules
-- A lightweight local server so the experience can be previewed immediately
-- Documentation for architecture, rollout, and product direction
+## Included experience
+- A polished multi-page SaaS landing experience
+- Executive dashboard, compliance, risk, reporting, and pricing views
+- A lightweight local preview setup for immediate testing
+- Product documentation for architecture and rollout planning
 
-## Suggested product modules
+## Core modules
 - Investor onboarding and KYC workflows
 - Compliance monitoring and audit trails
 - Risk scoring and anomaly detection
@@ -16,6 +16,7 @@ SmartGovern is a modern fintech SaaS starter for governance, compliance, risk ov
 - Multi-tenant governance controls for SaaS clients
 
 ## Quick start
+Use a simple static server from the repository root:
 ```bash
 python -m http.server 3000 --directory .
 ```
@@ -25,7 +26,11 @@ Then open http://localhost:3000/.
 ```text
 .
 ├── index.html
-├── styles.css
+├── dashboard.html
+├── compliance.html
+├── risk.html
+├── reports.html
+├── pricing.html
 ├── src/
 │   └── server.js
 ├── docs/
@@ -34,4 +39,4 @@ Then open http://localhost:3000/.
 ```
 
 ## Status
-This repository is now structured as a modern fintech SaaS foundation rather than a placeholder, with a clear path to expansion.
+This repository now functions as a complete fintech SaaS foundation with a modern product experience and clear next steps for integration and expansion.
