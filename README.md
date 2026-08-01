@@ -4,7 +4,8 @@ SmartGovern is a modern fintech SaaS experience for governance, compliance, risk
 
 ## Included experience
 - A polished multi-page SaaS landing experience
-- Executive dashboard, compliance, risk, reporting, and pricing views
+- Executive dashboard, compliance, risk, reporting, analytics, onboarding, and pricing views
+- Secure login and signup flows for a SaaS-style product experience
 - A lightweight local preview setup for immediate testing
 - Product documentation for architecture and rollout planning
 
@@ -30,6 +31,10 @@ Then open http://localhost:3000/.
 ├── compliance.html
 ├── risk.html
 ├── reports.html
+├── analytics.html
+├── onboarding.html
+├── login.html
+├── signup.html
 ├── pricing.html
 ├── src/
 │   └── server.js

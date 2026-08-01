@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartGovern Onboarding</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .wizard { display:grid; gap:12px; }
+      .step { background:rgba(255,255,255,.04); padding:14px; border-radius:12px; border:1px solid var(--border); }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-mark"></span>
+          <div>
+            <strong>SmartGovern</strong><br />
+            <span class="muted">Onboarding</span>
+          </div>
+        </div>
+        <div class="nav">
+          <a href="dashboard.html">Overview</a>
+          <a href="compliance.html">Compliance</a>
+          <a href="analytics.html">Analytics</a>
+          <a href="onboarding.html" class="active">Onboarding</a>
+          <a href="pricing.html">Pricing</a>
+        </div>
+      </aside>
+      <main class="main">
+        <div class="hero">
+          <span class="pill">Client onboarding</span>
+          <h1>Launch a new customer workspace</h1>
+          <p class="muted">Guide teams through setup, data import, and policy activation.</p>
+        </div>
+        <div class="wizard">
+          <div class="step"><strong>Step 1:</strong> Collect entity details and compliance scope.</div>
+          <div class="step"><strong>Step 2:</strong> Map users, roles, and review permissions.</div>
+          <div class="step"><strong>Step 3:</strong> Activate reporting and monitoring schedules.</div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
