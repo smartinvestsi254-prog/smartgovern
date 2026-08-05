@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
-import { createBodyValidator } from "../../../packages/shared-security/src/index";
+import { createBodyValidator } from "../../packages/shared-security/src/index";
 import { prisma } from "../lib/prisma";
 import { env } from "../config/env";
 import {
@@ -13,7 +13,7 @@ import {
   refreshAccessToken,
   authRequired,
 } from "../services/auth.service";
-import { getAllowedOrigins } from "../../../packages/shared-utils/src/env";
+import { getAllowedOrigins } from "../../packages/shared-utils/src/env";
 
 const router = Router();
 

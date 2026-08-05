@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
-import { createBodyValidator } from "../../../packages/shared-security/src/index";
+import { createBodyValidator } from "../../packages/shared-security/src/index";
 import { authRequired, requireRole } from "../services/auth.service";
 import { createIncident, updateIncidentStatus, listIncidents, getIncident } from "../services/incident.service";
 

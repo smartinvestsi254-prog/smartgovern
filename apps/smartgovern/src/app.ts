@@ -1,7 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import { createSecurityMiddleware } from "../../packages/shared-security/src/index";
-import { getAllowedOrigins } from "../../packages/shared-utils/src/env";
+import { createSecurityMiddleware } from "../packages/shared-security/src/index";
+import { getAllowedOrigins } from "../packages/shared-utils/src/env";
 import { env } from "./config/env";
 
 // Route modules
