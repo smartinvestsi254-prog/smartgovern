@@ -1,0 +1,35 @@
+{
+  "name": "@smartinvestsi/smartgovern",
+  "version": "1.0.0",
+  "description": "SmartGovern - Governance & Workflow Platform (Workflows, Incidents, Licensing, Diplomacy, Treaties, Delegations, Compliance)",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "type-check": "tsc --noEmit",
+    "prisma:generate": "prisma generate --schema=../../prisma/schemas/smartgovern.prisma",
+    "prisma:migrate": "prisma migrate dev --schema=../../prisma/schemas/smartgovern.prisma",
+    "prisma:deploy": "prisma migrate deploy --schema=../../prisma/schemas/smartgovern.prisma"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.0",
+    "helmet": "^7.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "pino": "^9.0.0",
+    "zod": "^3.24.2",
+    "@prisma/client": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.6",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.17.9",
+    "tsx": "^4.7.2",
+    "typescript": "^5.6.3"
+  }
+}
+</content>

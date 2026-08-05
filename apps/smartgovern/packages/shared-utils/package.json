@@ -1,0 +1,17 @@
+{
+  "name": "@smartinvest/shared-utils",
+  "version": "1.0.0",
+  "description": "Shared utility functions for SmartInvestsi & SmartGovern (env, crypto, pagination, idempotency)",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "test": "jest --runInBand"
+  },
+  "dependencies": {
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.9",
+    "typescript": "^5.6.3"
+  }
+}

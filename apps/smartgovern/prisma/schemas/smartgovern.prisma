@@ -1,0 +1,599 @@
+// ============================================================
+// SmartGovern — Governance & Workflow Platform
+// Prisma Schema (PostgreSQL @ Supabase)
+//
+// This schema contains ONLY governance/workflow domain models.
+// Fintech models live in prisma/schemas/smartinvestsi.prisma
+// ============================================================
+
+generator client {
+  provider        = "prisma-client-js"
+  engineType      = "binary"
+  output          = "../../node_modules/.prisma/smartgovern-client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================
+// GOVERNMENT USERS & ORGANIZATIONS
+// ============================================================
+
+enum GovernmentRole {
+  ADMIN
+  MINISTER
+  SECRETARY
+  DIRECTOR
+  OFFICER
+  ANALYST
+  REVIEWER
+  VIEWER
+  INCIDENT_COMMANDER
+}
+
+model GovernmentUser {
+  id            String        @id @default(uuid())
+  email         String        @unique
+  passwordHash  String        @db.VarChar(255)
+  fullName      String
+  role          GovernmentRole @default(VIEWER)
+  department    String?
+  ministry      String?
+  agency        String?
+  isActive      Boolean       @default(true)
+  lastLoginAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  organizations Organization[]
+  workflows    Workflow[]        @relation("LockedWorkflows")
+  workflowEvents WorkflowEvent[]
+  approvals    WorkflowApproval[]
+  reportedIncidents Incident[]    @relation("ReportedIncidents")
+  ownedIncidents   Incident[]     @relation("OwnedIncidents")
+  auditLogs    AuditLog[]
+  delegations  Delegation[]
+  treaties     Treaty[]
+  complianceRecords ComplianceRecord[]
+  sessions     Session[]
+
+  @@index([email])
+  @@map("government_users")
+}
+
+model Organization {
+  id          String   @id @default(uuid())
+  name        String
+  type        String
+  ministry    String?
+  department  String?
+  code        String?  @unique
+  parentId    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  parent   Organization?       @relation("OrgHierarchy", fields: [parentId], references: [id])
+  children Organization[]      @relation("OrgHierarchy")
+  members  GovernmentUser[]
+  policies Policy[]
+  workflows Workflow[]
+
+  @@map("organizations")
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  refreshToken String   @unique
+  deviceId     String?
+  ipAddress    String?
+  userAgent    String?
+  isRevoked    Boolean  @default(false)
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  user GovernmentUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+// ============================================================
+// WORKFLOW MANAGEMENT
+// ============================================================
+
+enum WorkflowState {
+  DRAFT
+  IN_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+  REJECTED
+}
+
+model Workflow {
+  id         String        @id @default(uuid())
+  name       String
+  description String?
+  type       String
+  state      WorkflowState @default(DRAFT)
+  lockedById String?
+  lockedAt   DateTime?
+  organizationId String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  lockedBy   GovernmentUser?  @relation("LockedWorkflows", fields: [lockedById], references: [id])
+  organization Organization?  @relation(fields: [organizationId], references: [id])
+  steps      WorkflowStep[]
+  events     WorkflowEvent[]
+  approvals  WorkflowApproval[]
+
+  @@index([state])
+  @@map("workflows")
+}
+
+enum WorkflowStepType {
+  START
+  APPROVAL
+  TASK
+  DECISION
+  NOTIFICATION
+  END
+}
+
+model WorkflowStep {
+  id          String          @id @default(uuid())
+  workflowId  String
+  name        String
+  order       Int
+  type        WorkflowStepType
+  assigneeId  String?
+  requiredRole GovernmentRole?
+  config      Json?
+  createdAt   DateTime        @default(now())
+
+  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId, order])
+  @@map("workflow_steps")
+}
+
+model WorkflowEvent {
+  id         String        @id @default(uuid())
+  workflowId String
+  actorId    String
+  fromState  WorkflowState
+  toState    WorkflowState
+  reason     String?
+  meta       Json?
+  createdAt  DateTime      @default(now())
+
+  workflow Workflow        @relation(fields: [workflowId], references: [id])
+  actor    GovernmentUser  @relation(fields: [actorId], references: [id])
+
+  @@map("workflow_events")
+}
+
+model WorkflowApproval {
+  id         String   @id @default(uuid())
+  workflowId String
+  reviewerId String
+  decision   String
+  notes      String?
+  createdAt  DateTime @default(now())
+
+  workflow Workflow       @relation(fields: [workflowId], references: [id])
+  reviewer GovernmentUser @relation(fields: [reviewerId], references: [id])
+
+  @@map("workflow_approvals")
+}
+
+// ============================================================
+// INCIDENT MANAGEMENT
+// ============================================================
+
+enum IncidentSeverity {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum IncidentStatus {
+  OPEN
+  INVESTIGATING
+  MITIGATING
+  RESOLVED
+  CLOSED
+}
+
+model Incident {
+  id           String           @id @default(uuid())
+  title        String
+  summary      String
+  severity     IncidentSeverity
+  status       IncidentStatus   @default(OPEN)
+  reportedById String
+  ownerId      String?
+  runbookKey   String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  mitigatedAt  DateTime?
+  resolvedAt   DateTime?
+  closedAt     DateTime?
+
+  reportedBy GovernmentUser @relation("ReportedIncidents", fields: [reportedById], references: [id])
+  owner      GovernmentUser? @relation("OwnedIncidents", fields: [ownerId], references: [id])
+  timeline   IncidentEvent[]
+  updates    IncidentUpdate[]
+
+  @@map("incidents")
+}
+
+model IncidentEvent {
+  id         String   @id @default(uuid())
+  incidentId String
+  message    String
+  meta       Json?
+  createdAt  DateTime @default(now())
+
+  incident Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+
+  @@map("incident_events")
+}
+
+model IncidentUpdate {
+  id           String         @id @default(uuid())
+  incidentId   String
+  status       IncidentStatus
+  publicNote   String?
+  internalNote String?
+  createdAt    DateTime       @default(now())
+
+  incident Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+
+  @@map("incident_updates")
+}
+
+model IncidentLog {
+  id          String   @id @default(uuid())
+  incidentId  String
+  action      String
+  actorEmail  String
+  details     Json?
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+
+  incident Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+
+  @@index([incidentId, createdAt])
+  @@map("incident_logs")
+}
+
+// ============================================================
+// DATA LICENSING
+// ============================================================
+
+enum LicenseStatus {
+  ACTIVE
+  SUSPENDED
+  EXPIRED
+  PENDING
+  REVOKED
+}
+
+enum DataUsagePurpose {
+  ANALYTICS
+  DISPLAY
+  REDISTRIBUTION
+  INTERNAL
+  RESEARCH
+}
+
+model LicensePartner {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  type      String?
+  contactEmail String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  licenses DataLicense[]
+
+  @@map("license_partners")
+}
+
+model DataLicense {
+  id                  String              @id @default(uuid())
+  partnerId           String
+  status              LicenseStatus       @default(ACTIVE)
+  allowedPurposes     DataUsagePurpose[]
+  attributionRequired Boolean             @default(false)
+  attributionText     String?
+  allowRedistribution Boolean             @default(false)
+  rateLimitPerMin     Int?
+  startDate           DateTime?
+  endDate             DateTime?
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  partner      LicensePartner     @relation(fields: [partnerId], references: [id])
+  entitlements DataEntitlement[]
+  usageLogs    DataUsageLog[]
+  holders      LicenseHolder[]
+
+  @@map("data_licenses")
+}
+
+model LicenseHolder {
+  id          String   @id @default(uuid())
+  licenseId   String
+  holderName  String
+  holderEmail String?
+  purpose     String?
+  grantedAt   DateTime @default(now())
+  expiresAt   DateTime?
+  isActive    Boolean  @default(true)
+
+  license DataLicense @relation(fields: [licenseId], references: [id], onDelete: Cascade)
+
+  @@index([licenseId])
+  @@map("license_holders")
+}
+
+model DataEntitlement {
+  id         String   @id @default(uuid())
+  licenseId  String
+  datasetKey String
+  createdAt  DateTime @default(now())
+
+  license DataLicense @relation(fields: [licenseId], references: [id], onDelete: Cascade)
+
+  @@map("data_entitlements")
+}
+
+model DataUsageLog {
+  id          String            @id @default(uuid())
+  licenseId   String?
+  datasetKey  String
+  purpose     DataUsagePurpose
+  actorUserId String?
+  ip          String?
+  userAgent   String?
+  requestMeta Json?
+  createdAt   DateTime          @default(now())
+
+  license DataLicense? @relation(fields: [licenseId], references: [id])
+
+  @@map("data_usage_logs")
+}
+
+// ============================================================
+// DIPLOMACY PORTAL
+// ============================================================
+
+enum MissionType {
+  EMBASSY
+  HIGH_COMMISSION
+  CONSULATE
+  PERMANENT_MISSION
+  HONORARY_CONSULATE
+}
+
+enum MissionStatus {
+  ACTIVE
+  PAUSED
+  PLANNING
+}
+
+model DiplomacyMission {
+  id           String        @id @default(uuid())
+  name         String
+  country      String
+  city         String
+  region       String?
+  type         MissionType
+  status       MissionStatus @default(ACTIVE)
+  contactEmail String?
+  contactPhone String?
+  focusArea    String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@map("diplomacy_missions")
+}
+
+enum TreatyStatus {
+  NEGOTIATION
+  SIGNED
+  RATIFIED
+  IN_REVIEW
+  IMPLEMENTATION
+  EXPIRED
+}
+
+model Treaty {
+  id            String       @id @default(uuid())
+  title         String
+  partner       String
+  sector        String
+  status        TreatyStatus @default(NEGOTIATION)
+  signedAt      DateTime?
+  nextMilestone String?
+  summary       String?
+  ownerId       String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  owner GovernmentUser? @relation(fields: [ownerId], references: [id])
+
+  @@map("treaties")
+}
+
+enum DelegationStatus {
+  PLANNED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model Delegation {
+  id           String           @id @default(uuid())
+  name         String
+  focus        String
+  hostCity     String
+  hostCountry  String
+  leadMinistry String
+  status       DelegationStatus @default(PLANNED)
+  startDate    DateTime
+  endDate      DateTime
+  objectives   String?
+  ownerId      String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  owner GovernmentUser? @relation(fields: [ownerId], references: [id])
+
+  @@map("delegations")
+}
+
+enum DocumentCategory {
+  BRIEFING_NOTE
+  PROTOCOL_GUIDE
+  TREATY_DRAFT
+  ECONOMIC_DIPLOMACY
+  OTHER
+}
+
+enum DocumentClass {
+  PUBLIC
+  RESTRICTED
+  CONFIDENTIAL
+}
+
+model DiplomacyDocument {
+  id             String            @id @default(uuid())
+  title          String
+  category       DocumentCategory
+  classification DocumentClass     @default(RESTRICTED)
+  ownerDept      String
+  summary        String?
+  linkUrl        String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@map("diplomacy_documents")
+}
+
+// ============================================================
+// POLICY & COMPLIANCE MANAGEMENT
+// ============================================================
+
+enum PolicyStatus {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
+model Policy {
+  id             String       @id @default(uuid())
+  title          String
+  category       String
+  version        Int          @default(1)
+  status         PolicyStatus @default(DRAFT)
+  content        String?
+  effectiveDate  DateTime?
+  expiryDate     DateTime?
+  organizationId String?
+  ownerId        String?
+  createdBy      String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization Organization? @relation(fields: [organizationId], references: [id])
+
+  @@index([status])
+  @@map("policies")
+}
+
+enum ComplianceStatus {
+  COMPLIANT
+  NON_COMPLIANT
+  PENDING
+  WAIVER
+  UNDER_REVIEW
+}
+
+model ComplianceRecord {
+  id              String           @id @default(uuid())
+  ownerId         String
+  entityType      String
+  entityId        String
+  regulation      String
+  status          ComplianceStatus @default(PENDING)
+  evidenceUrl     String?
+  reviewNotes     String?
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  dueDate         DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  owner GovernmentUser? @relation(fields: [ownerId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([status])
+  @@map("compliance_records")
+}
+
+// ============================================================
+// INTERNATIONAL COOPERATION
+// ============================================================
+
+model CooperationRecord {
+  id            String   @id @default(uuid())
+  partnerCountry String
+  program       String
+  description   String?
+  status        String   @default("ACTIVE")
+  startDate     DateTime?
+  endDate       DateTime?
+  budget        Float?
+  ownerId       String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([partnerCountry])
+  @@map("cooperation_records")
+}
+
+// ============================================================
+// AUDIT LOG
+// ============================================================
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  userId       String?
+  userEmail    String?
+  eventType    String
+  action       String
+  details      Json?
+  ipAddress    String?
+  userAgent    String?
+  success      Boolean  @default(true)
+  errorMessage String?
+  createdAt    DateTime @default(now())
+
+  user GovernmentUser? @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([eventType])
+  @@map("audit_logs")
+}
